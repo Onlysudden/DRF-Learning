@@ -7,19 +7,44 @@ from rest_framework.response import Response
 from .models import Women
 from .serializers import WomenSerializer
 
+"""Пример через подготовленный класс"""
 # class WomenAPIView(generics.ListAPIView):
 #     queryset = Women.objects.all()
 #     serializer_class = WomenSerializer
 
 class WomenAPIView(APIView):
     def get(self, request):
-        lst = Women.objects.all().values()
-        return Response({'posts': list(lst)})
+        w = Women.objects.all()
+        return Response({'posts': WomenSerializer(w, many=True).data})
     
     def post(self, request):
-        post_new = Women.objects.create(
-            title=request.data['title'],
-            content=request.data['content'],
-            cat_id=request.data['cat_id']
-        )
-        return Response({'post': model_to_dict(post_new)})
+        serializer = WomenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({'post': serializer.data})
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        if not pk:
+            return Response({'error': 'Method PUT not allowed'})
+        
+        try:
+            instance = Women.objects.get(pk=pk)
+        except:
+            return Response({'error': 'Object does not exists'})
+
+        serializer = WomenSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({'put': serializer.data})
+
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        if not pk:
+            return Response({'error': 'Method DELETE not allowed'})
+        
+        # Код для удаления записи
+
+        return Response({'delete': 'delete post ' + str(pk)})
