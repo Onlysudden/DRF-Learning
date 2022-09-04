@@ -7,11 +7,12 @@ from rest_framework.response import Response
 from .models import Women
 from .serializers import WomenSerializer
 
-"""Пример через подготовленный класс"""
-# class WomenAPIView(generics.ListAPIView):
-#     queryset = Women.objects.all()
-#     serializer_class = WomenSerializer
+class WomenAPIList(generics.ListCreateAPIView):
+    queryset = Women.objects.all()
+    serializer_class = WomenSerializer
 
+"""
+Пример через базовый класс APIView
 class WomenAPIView(APIView):
     def get(self, request):
         w = Women.objects.all()
@@ -48,3 +49,4 @@ class WomenAPIView(APIView):
         # Код для удаления записи
 
         return Response({'delete': 'delete post ' + str(pk)})
+"""

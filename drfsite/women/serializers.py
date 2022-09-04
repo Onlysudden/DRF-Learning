@@ -1,13 +1,15 @@
-import io
-
 from rest_framework import serializers
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
 
 from .models import Women
 
+class WomenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Women
+        #fields = ('title', 'content', 'cat')
+        fields = '__all__'
 
-
+"""
+Пример через базовый класс Serializer
 class WomenSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255)
     content = serializers.CharField()
@@ -27,3 +29,4 @@ class WomenSerializer(serializers.Serializer):
         instance.cat_id = validated_data.get('cat_id', instance.cat_id)
         instance.save()
         return instance
+"""
