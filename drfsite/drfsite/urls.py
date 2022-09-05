@@ -13,14 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import include
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, re_path, include
 
-from women.views import WomenViewSet
+from women.views import WomenAPIList, WomenAPIUpdate, WomenAPIDestroy
 from rest_framework import routers
 
-"""Правильно создавать файл routers и импортировать оттуда класс"""
+"""
+Правильно создавать файл routers и импортировать оттуда класс
 class MyCustomRouter(routers.SimpleRouter):
     routes = [
         routers.Route(
@@ -36,16 +36,27 @@ class MyCustomRouter(routers.SimpleRouter):
             detail=True,
             initkwargs={'suffix': 'Detail'})
     ]
+"""
 
 #router = routers.SimpleRouter
 #router = routers.SimpleRouter - Есть первичная ссылка со списком url адресов
-router = MyCustomRouter()
+
 #router.register(r'women', WomenViewSet, basename='womens') - basenamen обязателен, если нету queryset
+"""
+Пример через свой класс Router
+router = MyCustomRouter()
 router.register(r'women', WomenViewSet, basename='women')
+"""
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/', include(router.urls)),
+    path('api/v1/drf-auth/', include('rest_framework.urls')),
+    path('api/v1/women/', WomenAPIList.as_view()),
+    path('api/v1/women/<int:pk>/', WomenAPIUpdate.as_view()),
+    path('api/v1/womendelete/<int:pk>/', WomenAPIDestroy.as_view()),
+    path('api/v1/auth/', include('djoser.urls')),
+    re_path(r'^auth/', include('djoser.urls.authtoken')),
+    # path('api/v1/', include(router.urls)),
     # path('api/v1/womenlist/', WomenViewSet.as_view({'get': 'list'})),
     # path('api/v1/womenlist/<int:pk>/', WomenViewSet.as_view({'put': 'update'})),
     # path('api/v1/womendetail/<int:pk>/', WomenAPIDetailView.as_view()),
